@@ -1,14 +1,11 @@
 package org.learn.curs01;
 
 import org.learn.curs01.account.Account;
-import org.learn.curs01.account.AccountBl;
 import org.learn.curs01.account.Currency;
-import org.learn.curs01.history.HistoryImpl;
-import org.learn.curs01.storage.StorageImp;
 
 public class App {
-  public static void main(String[] args) throws CloneNotSupportedException {
-    AccountBl acct = new AccountBl(new HistoryImpl(), new StorageImp<Account>(),"koma");
+  public static void main(String[] args) {
+    Account acct = new Account("koma");
     System.out.println(acct.print());
 
     acct.setCurrencyValue(Currency.RUR,100);

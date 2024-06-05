@@ -2,9 +2,8 @@ package org.learn.curs01;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.learn.curs01.account.AccountBl;
+import org.learn.curs01.account.Account;
 import org.learn.curs01.account.Currency;
-import org.learn.curs01.history.HistoryImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +13,7 @@ public class AccountTest {
 
   @Test
   public void createAccountTest() {
-    AccountBl acct = new AccountBl(new HistoryImpl(), null, owner);
+    Account acct = new Account(owner);
     assertEquals(0, acct.getCurrencyNumbers());
     acct.setCurrencyValue(Currency.RUR, 100);
     assertEquals(1, acct.getCurrencyNumbers());
@@ -30,7 +29,7 @@ public class AccountTest {
 
   @Test
   public void changeNameTest() {
-    AccountBl acct = new AccountBl(new HistoryImpl(), null, owner);
+    Account acct = new Account(owner);
     acct.setOwner(owner1);
     assertEquals(owner1, acct.getOwner());
     assertEquals(1, acct.getHistorySize());
@@ -38,7 +37,7 @@ public class AccountTest {
 
   @Test
   public void addCurrencyTest() {
-    AccountBl acct = new AccountBl(new HistoryImpl(), null,owner);
+    Account acct = new Account(owner);
     acct.setCurrencyValue(Currency.RUR, 100);
     acct.setCurrencyValue(Currency.RUR, 200);
     assertEquals(200, acct.getCurrencyValue(Currency.RUR));
@@ -47,14 +46,14 @@ public class AccountTest {
 
   @Test
   public void wrongCurrencyTest() {
-    AccountBl acct = new AccountBl(new HistoryImpl(),null, owner);
+    Account acct = new Account(owner);
     RuntimeException exception = Assertions.assertThrows(RuntimeException.class, () -> acct.setCurrencyValue(Currency.RUR, -1));
     assertEquals("value must be more, then zero", exception.getMessage());
   }
 
   @Test
   public void undoChangeNameTest() {
-    AccountBl acct = new AccountBl(new HistoryImpl(), null,owner);
+    Account acct = new Account(owner);
     assertFalse(acct.canUndo());
     acct.setOwner(owner1);
     assertTrue(acct.canUndo());
@@ -66,7 +65,7 @@ public class AccountTest {
 
   @Test
   public void undoChangeCurrencyTest1() {
-    AccountBl acct = new AccountBl(new HistoryImpl(), null, owner);
+    Account acct = new Account(owner);
     assertFalse(acct.canUndo());
     acct.setCurrencyValue(Currency.RUR, 100);
     assertTrue(acct.canUndo());
@@ -91,7 +90,7 @@ public class AccountTest {
 
   @Test
   public void undoChangeCurrencyTest2() {
-    AccountBl acct = new AccountBl(new HistoryImpl(), null, owner);
+    Account acct = new Account(owner);
     assertFalse(acct.canUndo());
     acct.setCurrencyValue(Currency.RUR, 100);
     assertTrue(acct.canUndo());
