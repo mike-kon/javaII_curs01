@@ -1,10 +1,7 @@
 package org.learn.curs01.account;
 
 import lombok.Getter;
-import org.learn.curs01.history.History;
-import org.learn.curs01.history.HistoryCurrency;
-import org.learn.curs01.history.HistoryOwner;
-import org.learn.curs01.history.HistoryRemoveCurrency;
+import org.learn.curs01.history.*;
 import org.learn.curs01.storage.AccountSave;
 import org.learn.curs01.storage.CurrencySave;
 
@@ -25,7 +22,8 @@ public class Account {
   }
 
   public void setOwner(String owner) {
-    history.push(new HistoryOwner(this, this.owner));
+    String oldOwner = this.owner;
+    history.push(() -> this.owner = oldOwner);
     this.owner = owner;
   }
 
@@ -41,9 +39,11 @@ public class Account {
     if (newValue <= 0) {
       throw new RuntimeException("value must be more, then zero");
     }
-    history.push(currencyMap.containsKey(currency)
-            ? new HistoryCurrency(this, currency, currencyMap.get(currency))
-            : new HistoryRemoveCurrency(this, currency));
+    Double oldCurrency = currencyMap.get(currency);
+    history.push(oldCurrency == null
+            ? () -> currencyMap.remove(currency)
+            : () -> currencyMap.put(currency, oldCurrency)
+    );
     currencyMap.put(currency, newValue);
   }
 
@@ -59,30 +59,26 @@ public class Account {
     point.undo();
   }
 
-  public void undoOwner(String owner) {
-    this.owner = owner;
-  }
-
   public boolean canUndo() {
     return !history.isEmpty();
   }
 
-  public AccountSave save(){
+  public AccountSave save() {
     AccountSave acct = new AccountSave();
     acct.setOwner(owner);
     acct.setCurrency(
             currencyMap.entrySet().stream()
-                    .map(x -> new CurrencySave(x.getKey(),x.getValue())).toList());
+                    .map(x -> new CurrencySave(x.getKey(), x.getValue())).toList());
     return acct;
   }
 
-  public void restore(AccountSave acct){
-    if (acct == null){
+  public void restore(AccountSave acct) {
+    if (acct == null) {
       return;
     }
     owner = acct.getOwner();
     currencyMap = acct.getCurrency().stream().collect(HashMap::new,
-            (map, cr) -> map.put(cr.getCurrency(),cr.getValue()), Map::putAll);
+            (map, cr) -> map.put(cr.getCurrency(), cr.getValue()), Map::putAll);
     history.clear();
   }
 
